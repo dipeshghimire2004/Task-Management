@@ -23,7 +23,13 @@ const Category: React.FC = () => {
     const onDelete=async (categoryId: number)=>{
         if(window.confirm("Are you sure want to delete this category item"))
             try {
-                await axios.delete(`http://127.0.0.1:8000/api/categories/${categoryId}/`);
+                await axios.delete(`http://127.0.0.1:8000/api/categories/${categoryId}/`,
+                    {headers:{
+                        // Authorization:`Bearer ${accessToken}`
+                    }
+
+                    }
+                );
                 // categories(prevCategory => prevCategory.filter(category=>category.id !==categoryId) )
                 dispatch(fetchCategories())
                 

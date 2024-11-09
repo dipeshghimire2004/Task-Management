@@ -58,7 +58,7 @@ const Login: React.FC = () => {
             label="Email"
             id="email"
             type="email"
-            placeholder="Enter your email"
+            placeholder="Enter your email address"
             {...register('email', {
               required: 'Email is required',
               pattern: {

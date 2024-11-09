@@ -7,16 +7,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Category, Task
 from .serializers import CategorySerializer, TaskSerializer, RegisterSerializer, LoginSerializer
 
-#for home page
-# from django.shortcuts import render
-# from django.conf import settings
-# from django.http import HttpResponse, Http404
-
-# def serve_react_app(request):
-#     try:
-#         return render(request, os.path.join('frontend','build', 'index.html'))
-#     except FileNotFoundError:
-#         return Http404("React frontend not found")
 
 # Authentication Views
 class RegisterAPIView(APIView):
