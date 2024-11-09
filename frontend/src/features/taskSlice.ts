@@ -1,63 +1,83 @@
-import { ConfigureStoreOptions,createSlice,PayloadAction } from "@reduxjs/toolkit";
-// import { act } from "react";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { Task } from "../store/types";
 import { RootState } from "../store/store";
+import axios,{isAxiosError} from "axios";
+import Cookies from 'js-cookie';
 
-interface Task {
-    // id?:number;
-    id:string;
-    title: string;
-    category: string;
-    assigned_to: string;
-    start_date: string;
-    end_date: string;
-    priority: number;
-    description: string;
-    location: string;
-    completed?: boolean;
-  }
+interface TaskState{
+    tasks: Task[]
+    loading:boolean
+    error: string | null
+}
 
-  
-  interface TaskState{
-    tasks:Task[];
-    // currentTask: Task | null;
-    currentTask?:Task;
-  }
-
-  const initialState:TaskState={
+const initialState: TaskState={
     tasks:[],
-    // currentTask:null,
-    currentTask:undefined,
-  };
+    loading: false,
+    error: null,
+}
 
-  const taskSlice = createSlice({
-    name:'task',
-    initialState,
-    reducers:{
-        setTaskDetail(state, action:PayloadAction<Task>){
-            state.currentTask = action.payload;
-        },
-        clearTaskDetails(state){
-            state.currentTask=undefined
-        },
 
-        addTaskToState(state, action:PayloadAction<Task>){
-          state.tasks.push(action.payload)
-        },
-        updateTaskToState(state, action:PayloadAction<Task>){
-          const index=state.tasks.findIndex(task => task.id === action.payload.id);
-          if(index ! == -1){
-            state.tasks[index]=action.payload;
-          }
-          if(state.currentTask && state.currentTask.id ===action.payload.id){
-            state.currentTask =action.payload
-          }
-        }
+export const fetchTasks=createAsyncThunk<Task[], void, {rejectValue:string}>(
+    'tasks/fetchTasks',
+    async (_,{ rejectWithValue})=>{
+    try {
+        const token=Cookies.get('access');
+        const response = await axios.get('http://127.0.0.1:8000/api/tasks/',{
+            headers:{
+                Authorization:`Bearer ${token}`,
+            },
+            withCredentials:true
+        });
+        console.log("apidata",response.data)
+        return response.data
+        
+    } catch (error) {
+        const errorMsg = isAxiosError(error) 
+    ? error.response?.data?.message || 'Failed to fetch tasks'
+    : 'An unknown error occurred';
+return rejectWithValue(errorMsg);
+
+
+        return rejectWithValue("An unknown error occurred");
     }
-  });
+});
 
-  export const {setTaskDetail, addTaskToState, updateTaskToState, clearTaskDetails } =taskSlice.actions
 
-  export const selectTasks=(state:RootState)=> state.task.tasks
-  export const  selectCurrentTask=(state: RootState)=> state.task.currentTask
+const taskSlice=createSlice({
+    name:'tasks',
+    initialState,
+    reducers:{},
+    extraReducers:(builder)=>{
+        builder
+        .addCase(fetchTasks.fulfilled, (state, action)=>{
+            state.loading=false;
+            state.tasks=action.payload;
+        })
+        .addCase(fetchTasks.rejected, (state, action)=>{
+            state.loading=false;
+            state.error=action.payload || 'Failed to fetch Tasks'
+        })
+        .addCase(fetchTasks.pending, (state)=>{
+            state.loading = true;
+            state.error=null;
+        })
+    }
+})
 
-  export default taskSlice.reducer;
+
+export const selectTasks =(state:RootState)=>state.task?.tasks || [];
+
+export const selectTasksById=(state:RootState, taskid:number)=>{
+    return state.task.tasks.find(task=>task.id ===taskid)
+}
+    
+
+export default taskSlice.reducer
+
+
+
+
+
+
+
+

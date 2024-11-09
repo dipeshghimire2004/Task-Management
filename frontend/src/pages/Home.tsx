@@ -3,58 +3,50 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import Button from '../components/Button';
 import { Link } from 'react-router-dom';
+import { fetchTasks, selectTasks } from '../features/taskSlice';
+import { useAppDispatch, useAppSelector } from '../store/Hooks';
+import { fetchCategories, selectCategories } from '../features/categorySlice';
+import { RootState } from '../store/store';
 
-interface TaskItem {
-  id: number;
-  title: string;
-  category_name: string;
-  user_name: string;
-  completed: boolean;
-  end_date: string;
-  taskId: number
-}
 
-interface CategoryItem {
-  name: string;
-  id: number; // Ensure this is unique
-}
 
 const Home: React.FC = () => {
-  const [tasks, setTasks] = useState<TaskItem[]>([]);
-  const [categories, setCategories] = useState<CategoryItem[]>([]);
+
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-
+  const dispatch=useAppDispatch();
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/tasks/')
-      .then(response =>{ 
-        setTasks(response.data)
-        console.log("Fetched tasks:", response.data); // Log tasks fetched
-      })
-      
-      .catch(error => console.error('Error fetching tasks:', error));
+   
+      // try {
+    
+        dispatch(fetchCategories());
+        dispatch(fetchTasks());
+        console.log(fetchTasks);
+    
+      // } catch (error) {
+      //   console.error('Error fetching data:', error);
+      // }
 
-    axios.get('http://127.0.0.1:8000/api/categories/')
-      .then(response => setCategories(response.data))
-      .catch(error => console.error('Error fetching categories:', error));
-  }, []);
+  }, [dispatch]);
 
-  const onDelete = (taskId: number) => {
-    console.log("Attempting to delete task with ID:", taskId); // Log the task ID
-    if (window.confirm('Are you sure you want to delete this task?')) {
-      axios.delete(`http://127.0.0.1:8000/api/tasks/${taskId}/`)
-        .then(() => {
-          setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+  const categories=useAppSelector((state:RootState)=>selectCategories(state));
+    const tasks=useAppSelector((state:RootState)=>selectTasks(state))
+    console.log(tasks)
+
+
+    const onDelete = async (taskId: number) => {
+      console.log("Attempting to delete task with ID:", taskId);
+      if (window.confirm('Are you sure you want to delete this task?')) {
+        try {
+          await axios.delete(`http://127.0.0.1:8000/api/tasks/${taskId}/`);
+          dispatch(fetchTasks());
           console.log(`Task with ID ${taskId} deleted successfully.`);
-        })
-        .catch(error => {
-          console.error("Error while deleting the task", error);
-          if (error.response) {
-            console.error("Server responded with:", error.response.data);
-          }
-        });
-    }
-  };
-  
+        }  catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      }
+    };
+
+
 
   const filteredCategoryTask = selectedCategory 
     ? tasks.filter(task => task.category_name === selectedCategory) 
@@ -72,7 +64,7 @@ const Home: React.FC = () => {
             >
               <option value="">All</option>
               {categories.map((category) => (
-                <option key={category.id} value={category.name}>{category.name}</option> // Correctly using unique key
+                <option key={category.id} value={category.name}>{category.name}</option>
               ))}
             </select>
           </motion.div>
@@ -98,16 +90,13 @@ const Home: React.FC = () => {
                     <td className="border px-4 py-2 text-gray-700">{task.completed ? 'Yes' : 'No'}</td>
                     <td className="border px-4 py-2 space-x-2">
                       <div>
-                      <Button bgColor='bg-green-600'><Link to={`/details/${task.id}`}>Details </Link></Button>
-                    <Button bgColor='bg-blue-600'><Link to={`/taskform/${task.id}`}>Edit</Link></Button>
-                      <Button onClick={() => {
-                         console.log("Deleting task ID:", task.id); // Log the task ID
-                        onDelete(task.id)}} bgColor='bg-red-600'>Delete</Button>
+                        <Button bgColor='bg-green-600'><Link to={`/tasks/${task.id}`}>TaskList</Link></Button>
+                        <Button bgColor='bg-blue-600'><Link to={`/taskform/${task.id}`}>Edit</Link></Button>
+                        <Button onClick={() => onDelete(task.id)} bgColor='bg-red-600'>Delete</Button>
                       </div>
                     </td>
                   </motion.tr>
                 ))}
-                
               </tbody>
             </table>
           </motion.div>

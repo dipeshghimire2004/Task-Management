@@ -3,12 +3,9 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { useParams } from 'react-router-dom';
 import Button from '../components/Button';
-// import { useDispatch } from 'react-redux';
-// import {aboutTask} from '../features/taskSlice'
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 
 interface TaskDetailsProps {
-    
   title: string;
   category: string;
   assigned_to: string;
@@ -22,34 +19,40 @@ interface TaskDetailsProps {
 
 const TaskDetails: React.FC = () => {
   const [taskDetails, setTaskDetails] = useState<TaskDetailsProps | null>(null);
+  const [error, setError] = useState<string | null>(null); // State to hold error messages
   const { taskId } = useParams<{ taskId: string }>();
-//   const dispatch =useDispatch()
-
 
   useEffect(() => {
-    axios
-      .get(`http://127.0.0.1:8000/api/tasks/${taskId}/`)
-      .then((response) => {
-        const task=(response.data)
-        setTaskDetails(task)
-        // dispatch(aboutTask(task))
-    })
-      .catch((error) => console.error('Error occurred:', error));
+    const fetchTaskDetails = async () => {
+      try {
+        const response = await axios.get<TaskDetailsProps>(`http://127.0.0.1:8000/api/tasks/${taskId}/`);
+        setTaskDetails(response.data);
+      } catch (err) {
+        console.error('Error occurred:', err);
+        setError('Failed to load task details. Please try again later.'); // Set error message
+      }
+    };
+
+    fetchTaskDetails();
   }, [taskId]);
 
+  if (error) {
+    return <div className="text-red-500 text-center">{error}</div>; // Display error message if it exists
+  }
+
   if (!taskDetails) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // Loading state
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       className="p-8 bg-white shadow-lg rounded-lg mx-auto max-w-2xl mt-12"
     >
       <h2 className="text-3xl font-bold text-center mb-6">{taskDetails.title}</h2>
-      
+
       <div className="space-y-4 text-gray-700">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -102,13 +105,13 @@ const TaskDetails: React.FC = () => {
           </p>
         </motion.div>
       </div>
-        <div className='flex space-x-4 mt-4'>
-            <Button bgColor='bg-green-500' className="duration-300">Mark as Completed</Button>
-            {/* <Button className=' '><Link to={`/taskform/${task.id}`}>Update</Link></Button> */}
-        </div>
+
+      <div className='flex space-x-4 mt-4'>
+        <Button bgColor='bg-green-500' className="duration-300">Mark as Completed</Button>
+        {/* <Button className=' '><Link to={`/taskform/${task.id}`}>Update</Link></Button> */}
+      </div>
 
     </motion.div>
-
   );
 };
 

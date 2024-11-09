@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
+# import rest_framework
+from datetime import timedelta
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +27,7 @@ SECRET_KEY = 'django-insecure-4x(6$l(0-h3r8-*3!tkt2-91o$*h9tha@&n!*4f3$=(w)(5ner
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -39,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'task_management_system_app',
     'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'django_extensions',
 ]
@@ -46,12 +50,13 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware', #CORS middleware should come after sessionMiddleWare and before CommonMiddleWare
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware'
+    
 ]
 
 
@@ -60,7 +65,9 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [],  #to connect with frontend
+        # 'DIRS': [os.path.join(BASE_DIR, 'frontend', 'dist')],  #to connect with frontend
+        
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -90,28 +97,23 @@ DATABASES = {
 # category validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-category-validators
 
-AUTH_category_VALIDATORS = [
+# AUTH_category_VALIDATORS = [
+AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.category_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.category_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.category_validation.CommoncategoryValidator',
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',  # Corrected spelling
     },
     {
-        'NAME': 'django.contrib.auth.category_validation.NumericcategoryValidator',
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',  # Corrected spelling
     },
 ]
 
-# CORS_ORIGIN_WHITELIST = (
-#     'http://localhost:5173',
-# )
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -130,7 +132,51 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'frontend', 'dist', 'assets')  # points to the assets folder inside dist
+# ]
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# CORS configuration
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = False  # Make sure this is set to False if you're using credentials
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',  # Your frontend URL
+]
+CORS_ALLOW_HEADERS = [
+    'Authorization',
+    'Content-Type',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
+
+#Ensures cookies are sent properly
+SESSION_COOKIE_SECURE=False #set to true if using HTTPS
+CSRF_COOKIE_SECURE=False    #set to true if using HTTPS
+
+
+AUTH_USER_MODEL = 'task_management_system_app.CustomUser'
+ #for custom user
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
+    'ROTATE_REFRESH_TOKEN': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
