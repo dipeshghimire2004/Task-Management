@@ -7,6 +7,8 @@ import { fetchCategories } from '../features/categorySlice'
 import { useAppDispatch,useAppSelector } from '../store/Hooks'
 import { RootState } from '../store/store'
 import { selectCategoryById } from '../features/categorySlice'
+import Cookies from 'js-cookie'
+import toast,{Toaster} from 'react-hot-toast'
 
 
 interface categoryItem {
@@ -26,8 +28,8 @@ const CategoryForm: React.FC<categoryItemProps > = () => {
         }
     });
     const navigate=useNavigate();
-    const dispatch=useAppDispatch()
-
+    const dispatch=useAppDispatch();
+    const token=Cookies.get('access');
     useEffect(()=>{
         dispatch(fetchCategories());
     },[dispatch])
@@ -52,19 +54,25 @@ const CategoryForm: React.FC<categoryItemProps > = () => {
         // const { name } = data;
         try {
             if(isUpdate && id){
-                await axios.patch(`http://127.0.0.1:8000/api/categories/${id}/`, data,{
+                await axios.put(`http://127.0.0.1:8000/api/categories/${id}/`, data,{
                     headers:{
-                        'Content-Type':'application/json'
+                        'Content-Type':'application/json',
+                        'Authorization':`Bearer ${token}`,
                     },
+                    withCredentials:true
                 });
+                toast.success('Category updated successfully')
                 navigate('/categories');
             }
             else{
-                const response = await axios.post('http://127.0.0.1:8000/api/categories/create_category/', { data }, {
+                const response = await axios.post('http://127.0.0.1:8000/api/categories/', data , {
                     headers: {
-                        'Content-type': 'application/json'
-                    }
+                        'Content-type': 'application/json',
+                        'Authorization':`Bearer ${token}`
+                    },
+                    withCredentials:true
                 });
+                toast.success('Category created successfully')
                 navigate('/');
                 const category_name=response.data.name
                 // if(caregories.some((category)=>category.name === CreateCategories))
@@ -78,6 +86,7 @@ const CategoryForm: React.FC<categoryItemProps > = () => {
 
     return (
         <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100 p-4">
+            <Toaster/>
             <h2>{isUpdate ? 'Update Category' : 'Create Category'}</h2>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Input

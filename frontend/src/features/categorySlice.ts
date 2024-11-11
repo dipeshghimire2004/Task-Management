@@ -4,7 +4,6 @@ import axios, { isAxiosError } from 'axios';
 import { RootState } from '../store/store';
 import { Category } from '../store/types';
 import Cookies from 'js-cookie';
-import { tr } from 'framer-motion/client';
 
 // interface Category {
 //   id: number;

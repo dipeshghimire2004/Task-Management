@@ -8,7 +8,7 @@ import TaskDetails from './pages/TaskDetails';
 import CategoryForm from './components/CategoryForm';
 import Register from './pages/Register';
 import Login from './pages/Login';
-
+import SearchResults from './pages/SearchResults';
 
 function App() {
   return (
@@ -27,6 +27,7 @@ function App() {
           <Route path='/taskdetails/:taskId' element={<Tasks/>} />
           <Route path='/categories' element={<Category/>} />
           <Route path='/details/:taskId' element={<TaskDetails/>}/>
+          <Route path='/searchresults' element={<SearchResults/>}/>
         </Routes>    
       </div>
     </Router>

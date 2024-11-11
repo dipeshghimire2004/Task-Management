@@ -59,7 +59,7 @@ const TaskForm: React.FC = () => {
     setLoading(true);
     try {
       if (isUpdate) {
-        await axios.patch(`http://127.0.0.1:8000/api/tasks/${taskId}/`, data, {
+        await axios.put(`http://127.0.0.1:8000/api/tasks/${taskId}/`, data, {
           headers: { 'Content-Type': 'application/json' },
         });
         console.log('Task updated successfully');

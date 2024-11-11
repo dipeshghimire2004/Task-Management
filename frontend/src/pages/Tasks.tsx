@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import Button from '../components/Button';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-
+import Breadcrumb from '../components/Breadcrumb';
 
 const Tasks:React.FC = () => {
 
@@ -46,6 +46,7 @@ const Tasks:React.FC = () => {
   
   return (
     <div className='text-black flex items-center'>
+        <Breadcrumb/>
         <h1>Tasks Assigned to '......'</h1>
        
         <motion.div className="w-full col-span-2 p-6 rounded-lg shadow-md" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>

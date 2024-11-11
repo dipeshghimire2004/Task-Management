@@ -1,12 +1,13 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from rest_framework import status # type: ignore
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Category, Task
 from .serializers import CategorySerializer, TaskSerializer, RegisterSerializer, LoginSerializer
-
+from rest_framework.decorators import action
+from django.db.models import Q
 
 # Authentication Views
 class RegisterAPIView(APIView):
@@ -40,9 +41,11 @@ class LogoutAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        if request.auth:
-            token = request.auth
-            token.blacklist()
+        if hasattr(request.auth,'blacklist'):
+            request.auth.blacklist()
+        # if request.auth:
+        #     token = request.auth
+        #     token.blacklist()
         return Response({'message': 'Logout successfully'}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -124,3 +127,13 @@ class TaskDetailAPIView(APIView):
         task = get_object_or_404(Task, pk=pk)
         task.delete()
         return Response({'message': 'Task deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+    # @action(detail=False, methods=['get'], url_path='search')
+    def search(self, request):
+        query = request.query_params.get('q','')
+        results = Task.objects.filter(
+            Q(title_icontains=query) | Q(category_icontains=query)
+        )
+        serializer= TaskSerializer(results, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    

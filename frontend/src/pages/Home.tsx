@@ -53,7 +53,7 @@ const Home: React.FC = () => {
     : tasks;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b bg-black text-white p-8">
+    <div className="flex items-center h-full w-full  bg-black fixed text-white p-8">
       <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.6 }}>
         <div className="w-full ml-2 grid sm:grid-cols-1  lg:grid-cols-3 gap-6">
           <motion.div className="bg-blue-50 col-span-1 p-6 text-white rounded-lg shadow-md" initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 1 }}>
@@ -83,11 +83,11 @@ const Home: React.FC = () => {
               </thead>
               <tbody className='overflow-hidden'>
                 {filteredCategoryTask.map((task) => (
-                  <motion.tr key={task.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="hover:bg-gray-100 transition">
-                    <td className="border px-4 py-2 text-gray-700">{task.title}</td>
-                    <td className="border px-4 py-2 text-gray-700">{task.category_name}</td>
-                    <td className="border px-4 py-2 text-gray-700">{task.user_name}</td>
-                    <td className="border px-4 py-2 text-gray-700">{task.completed ? 'Yes' : 'No'}</td>
+                  <motion.tr key={task.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="hover:shadow-xl transition">
+                    <td className="border px-4 py-2 ">{task.title}</td>
+                    <td className="border px-4 py-2 ">{task.category_name}</td>
+                    <td className="border px-4 py-2 ">{task.assigned_to}</td>
+                    <td className="border px-4 py-2 ">{task.completed ? 'Yes' : 'No'}</td>
                     <td className="border px-4 py-2 space-x-2">
                       <div>
                         <Button bgColor='bg-green-600'><Link to={`/tasks/${task.id}`}>TaskList</Link></Button>

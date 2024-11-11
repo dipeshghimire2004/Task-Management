@@ -1,33 +1,128 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import { AiOutlineEyeInvisible, AiOutlineEye } from 'react-icons/ai';
+import { Input, Button } from '../components'; // Custom components for input and button
+import toast, { Toaster } from 'react-hot-toast';
 import { registerUser } from '../api/auth';
 
-const Register = () => {
-  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
-  const [message, setMessage] = useState('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+type FormInputs = {
+  username:string;
+  email: string;
+  password: string;
+};
+
+const Register: React.FC = () => {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const navigate = useNavigate();
+
+  // Initialize react-hook-form
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<FormInputs>();
+
+  // Toggle password visibility
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Handle form submission
+  const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     try {
-      await registerUser(formData);
-      setMessage('Registration successful!');
-    } catch (err: any) {
-      setMessage(err.response?.data?.detail || 'Registration failed');
+       await registerUser(data);
+     
+      toast.success("User registered successful!");
+
+      setTimeout(() => {
+        navigate('/login', { replace: true });
+      }, 1000);
+      reset();
+    } catch (error) {
+      // Handle Axios-specific errors
+      // if (axios.isAxiosError(error)) {
+      //   toast.error(error.message || "Network connection issue, please try again!");
+      // } else {
+        toast.error("An unexpected error occurred");
+      // }
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <form onSubmit={handleSubmit} className="w-96 bg-gray-100 p-8 rounded-lg">
-        <h2 className="text-2xl mb-6">Register</h2>
-        <input type="text" name="username" placeholder="Username" className="mb-4 p-2 border" onChange={handleChange} />
-        <input type="email" name="email" placeholder="Email" className="mb-4 p-2 border" onChange={handleChange} />
-        <input type="password" name="password" placeholder="Password" className="mb-4 p-2 border" onChange={handleChange} />
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Register</button>
-        {message && <p className="mt-4 text-red-500">{message}</p>}
+    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      {/* Toast notifications */}
+      <Toaster />
+
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+        <h2 className="text-2xl font-semibold mb-6 text-center">Register</h2>
+
+        <div className='mb-4'>
+          <Input
+            label='Username'
+            id='username'
+            type='text'
+            placeholder='Enter your username'
+            {...register('username',{
+              required:'Username is required'
+            })}
+          />
+          {errors.username && <span className='text-red-500'>{errors.username.message}</span>}
+        </div>
+
+        {/* Email Input Field */}
+        <div className="mb-4">
+          <Input
+            label="Email"
+            id="email"
+            type="email"
+            placeholder="Enter your email address"
+            {...register('email', {
+              required: 'Email is required',
+              pattern: {
+                value: /^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,6}$/,
+                message: 'Please enter a valid email',
+              },
+            })}
+          />
+          {errors.email && <span className="text-red-500">{errors.email.message}</span>}
+        </div>
+
+        {/* Password Input Field */}
+        <div className="mb-4 relative">
+          <Input
+            label="Password"
+            id="password"
+            type={passwordVisible ? 'text' : 'password'}
+            placeholder="Enter your password"
+            {...register('password', { required: 'Password is required' })}
+            className="border border-gray-300 rounded-md w-full p-2 pr-10"
+          />
+          {/* Toggle password visibility button */}
+          <Button
+            type="button"
+            onClick={togglePasswordVisibility}
+            bgColor="transparent"
+            textColor=""
+            className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-500"
+          >
+            {passwordVisible ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+          </Button>
+          {errors.password && <span className="text-red-500">{errors.password.message}</span>}
+        </div>
+
+        {/* Submit Button */}
+        <div className="mb-6">
+          <Button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
+          >
+            Create
+          </Button>
+        </div>
+
+        {/* Link to Register Page */}
+        <div className="flex justify-center items-center">
+          <p className="mr-2">Don't have an account?</p>
+          <Link to="/login" className="text-blue-500 hover:underline">Login</Link>
+        </div>
       </form>
     </div>
   );

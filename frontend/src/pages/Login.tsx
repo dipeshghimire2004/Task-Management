@@ -26,13 +26,14 @@ const Login: React.FC = () => {
   // Handle form submission
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     try {
-      const response = await loginUser(data);
-      reset();
+       await loginUser(data);
+     
       toast.success("Login successful!");
 
       setTimeout(() => {
         navigate('/', { replace: true });
       }, 1000);
+      reset();
     } catch (error) {
       // Handle Axios-specific errors
       // if (axios.isAxiosError(error)) {

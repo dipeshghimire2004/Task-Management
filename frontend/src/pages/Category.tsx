@@ -6,7 +6,7 @@ import { fetchCategories, selectCategories } from '../features/categorySlice';
 import { useAppDispatch, useAppSelector } from '../store/Hooks';
 import { RootState } from '../store/store';
 import axios from 'axios';
-
+import Breadcrumb from '../components/Breadcrumb';
 
 
 const Category: React.FC = () => {
@@ -40,6 +40,7 @@ const Category: React.FC = () => {
     }
     return (
         <div className="p-6 mx-12 bg-gray-100 rounded-lg shadow-md">
+            <Breadcrumb/>
             <h1 className="text-2xl text-center font-bold mb-4">Categories</h1>
             
             {categories.length > 0 ? (

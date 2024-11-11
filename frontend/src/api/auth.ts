@@ -28,7 +28,7 @@ export const loginUser = async (data: { email: string; password: string }) => {
       Cookies.set('access', response.data.access, {
         expires: 1,
         sameSite: 'Lax', // Change to 'Strict' or 'None' if necessary
-        secure: window.location.protocol === 'https:',
+        // secure: window.location.protocol === 'https:',
       });
     }
     return response.data;

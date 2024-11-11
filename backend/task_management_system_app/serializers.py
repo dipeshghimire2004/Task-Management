@@ -44,14 +44,15 @@ class LoginSerializer(serializers.Serializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        # fields = ('name',)
-        fields='__all__'
+        fields = ('id','name')
+        # fields='__all__'
 
 
 class TaskSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
-    user_name=serializers.CharField(source='assigned_to.username', read_only=True)
+    # user_name=serializers.CharField(source='assigned_to.username', read_only=True)
     class Meta:
         model=Task
         # fields=('title', 'category','category_name','user_name', 'assigned_to','start_date','end_date','priority','description','location','completed')
-        fields='__all__' 
+        # fields='__all__' 
+        fields=('id','title','category_name', 'assigned_to','start_date','end_date','priority','description','location','completed')
