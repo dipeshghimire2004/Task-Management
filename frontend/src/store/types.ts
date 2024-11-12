@@ -10,7 +10,7 @@ export interface Category {
     id: number; // Optional for new tasks
     title: string;
     category: string;
-    assigned_to: string;
+    user: string;
     start_date: string;
     end_date: string;
     priority: number;

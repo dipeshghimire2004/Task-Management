@@ -86,7 +86,7 @@ const Home: React.FC = () => {
                   <motion.tr key={task.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="hover:shadow-xl transition">
                     <td className="border px-4 py-2 ">{task.title}</td>
                     <td className="border px-4 py-2 ">{task.category_name}</td>
-                    <td className="border px-4 py-2 ">{task.assigned_to}</td>
+                    <td className="border px-4 py-2 ">{task.user}</td>
                     <td className="border px-4 py-2 ">{task.completed ? 'Yes' : 'No'}</td>
                     <td className="border px-4 py-2 space-x-2">
                       <div>

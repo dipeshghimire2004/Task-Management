@@ -25,8 +25,8 @@ class Category(models.Model):
 class Task(models.Model):
     title=models.CharField(max_length=100)
     category=models.ForeignKey(Category, on_delete=models.CASCADE)
-    assigned_to=models.CharField( max_length=50)
-    # assigned_to=models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tasks')
+    # assigned_to=models.CharField( max_length=50)
+    assigned_to=models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tasks')
     start_date=models.DateTimeField()
     end_date=models.DateTimeField()
     PRIORITY_CHOICES=[(1,'Low'),(2,'Medium'),(3,'High')]

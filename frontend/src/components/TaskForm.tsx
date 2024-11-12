@@ -5,26 +5,16 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import Input from './Input';
 import Button from './Button';
 import { RootState } from '../store/store';
-// import { useAppDispatch, useAppSelector } from '../store/Hooks';
 import { useAppSelector } from '../store/Hooks';
 import { selectTasksById } from '../features/taskSlice';
+import { Task } from "../store/types";
 
-interface Task {
-  id?: number;
-  title: string;
-  category: string;
-  assigned_to: string;
-  start_date: string;
-  end_date: string;
-  priority: number;
-  description: string;
-  location: string;
-  completed?: boolean;
-  category_name: string;
-  user_name: string;
-}
+
 
 const TaskForm: React.FC = () => {
+  const [categories,setCategories]=useState<string[]>([])
+  const [users, setUsers]=useState<string[]>([])
+
   const navigate = useNavigate();
   // const dispatch = useAppDispatch();
   const { taskId } = useParams<{ taskId: string }>();
@@ -44,6 +34,24 @@ const TaskForm: React.FC = () => {
   );
 
   const [loading, setLoading] = useState(false);
+
+
+  useEffect(()=>{
+    const fetchData=async()=>{
+      try {
+        const categoryResponse = await axios.get('http://127.0.0.1:8000/api/categories/')
+        setCategories(categoryResponse.data)
+
+        const userResponse = await axios.get('http://127.0.0.1:8000/api/users/')
+        setUsers(userResponse.data)
+      } catch (error) {
+        console.error("error occured while fetching data",error)
+      }
+    }
+    fetchData();
+  },[])
+
+
 
   // Populate form if updating an existing task
   useEffect(() => {
@@ -106,32 +114,53 @@ const TaskForm: React.FC = () => {
           <span className="text-red-500">{errors.title.message}</span>
         )}
 
-        {/* Category Input */}
-        <Input
-          label="Category"
-          id="category"
-          type="text"
-          placeholder="Enter task category"
-          {...register('category', { required: 'Category is required' })}
-        />
-        {errors.category && (
-          <span className="text-red-500">{errors.category.message}</span>
-        )}
 
+        <div className='mb-4'>
+          <label htmlFor="category" className="block text-gray-700"> Category</label>
+          <select
+            id='category'
+            className='w-full p-2 border border-gray-700 rounded-lg'
+            {...register('category',{required:'Category is required'})}
+          >
+            <option value="">
+              {categories.map((category:any)=>(
+                <option key={category.id} value={category.id}>{category.name}</option>
+              ))}
+            </option>
+            {errors.category && <span className="text-red-500">{errors.category.message}</span>}
+          </select>
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="user" className="block text-gray-700">Assigned To</label>
+          <select
+            id="user"
+            className="w-full p-2 border border-gray-300 rounded-lg"
+            {...register('user', { required: 'Assigned To is required' })}
+          >
+            <option value="">Select User</option>
+            {users.map((user: any) => (
+              <option key={user.id} value={user.id}>
+                {user.username}
+              </option>
+            ))}
+          </select>
+          {errors.user && <span className="text-red-500">{errors.user.message}</span>}
+        </div>
         {/* Assigned To Input */}
-        <Input
+        {/* <Input
           label="Assigned To"
-          id="assigned_to"
+          id="user"
           type="text"
           placeholder="Assignee's name"
-          {...register('assigned_to', { required: 'Assigned To is required' })}
+          {...register('user', { required: 'Assigned To is required' })}
         />
-        {errors.assigned_to && (
-          <span className="text-red-500">{errors.assigned_to.message}</span>
-        )}
+        {errors.user && (
+          <span className="text-red-500">{errors.user.message}</span>
+        )} */}
 
         {/* Start Date Input */}
-        <Input
+        {/* <Input
           label="Start Date"
           id="start_date"
           type="date"
@@ -139,7 +168,7 @@ const TaskForm: React.FC = () => {
         />
         {errors.start_date && (
           <span className="text-red-500">{errors.start_date.message}</span>
-        )}
+        )} */}
 
         {/* End Date Input */}
         <Input

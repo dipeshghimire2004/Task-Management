@@ -1,6 +1,6 @@
+# from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Category, Task
-# from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model, authenticate
 
 User=get_user_model()
@@ -32,13 +32,22 @@ class LoginSerializer(serializers.Serializer):
     password =serializers.CharField(write_only=True)
 
     def validate(self, data):
-        user =authenticate(username=data['email'], password=data['password'])
+        # user =authenticate(username=data['email'], password=data['password'])
+        # if user and user.is_active:
+        #     return user
+        
+        user = authenticate(username=data['email'],password=data['password'])
         if user and user.is_active:
             return user
+        
         
         raise serializers.ValidationError("Invalid Credentials")
 
 
+class UserSerializer(serializers.Serializer):
+    class Meta:
+        model= User
+        fields=['id','username','email']
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -50,9 +59,28 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
-    # user_name=serializers.CharField(source='assigned_to.username', read_only=True)
+    user=serializers.CharField(source='assigned_to.email', read_only=True)
+
+    #accept an email for assigning a user to the task 
+    assigned_to_email = serializers.EmailField(write_only=True)
+
     class Meta:
         model=Task
         # fields=('title', 'category','category_name','user_name', 'assigned_to','start_date','end_date','priority','description','location','completed')
         # fields='__all__' 
-        fields=('id','title','category_name', 'assigned_to','start_date','end_date','priority','description','location','completed')
+        fields=('id','user','title','category_name','start_date','end_date','priority','description','location','completed','assigned_to_email')
+
+    def create(self, validated_data):
+        #extracthte email for assgnment from the validated data
+        assigned_to_email=validated_data.pop('assigned_to_email', None)
+
+        if assigned_to_email:
+            try:
+                assgined_to_user = User.objects.get(email = assigned_to_email)
+            except User.DoesNotExist:
+                raise serializers.ValidationError(f"User with email {assigned_to_email} does not exist.")
+            
+            validated_data['assigned_to'] = assgined_to_user
+
+        task = super().create(validated_data)
+        return task
