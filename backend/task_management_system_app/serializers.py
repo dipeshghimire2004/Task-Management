@@ -10,7 +10,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=User
-        fields=['username', 'email', 'password']
+        fields=['id','username', 'email', 'password']
 
     def validate_email(self,value):
             if User.objects.filter(email=value).exists():
@@ -44,7 +44,7 @@ class LoginSerializer(serializers.Serializer):
         raise serializers.ValidationError("Invalid Credentials")
 
 
-class UserSerializer(serializers.Serializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model= User
         fields=['id','username','email']

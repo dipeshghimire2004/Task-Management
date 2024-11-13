@@ -20,6 +20,8 @@ interface categoryItemProps{
 
 
 const CategoryForm: React.FC<categoryItemProps > = () => {
+
+
     const {id}= useParams<{id:string}>()
     const isUpdate =!!id;
     const { register, handleSubmit,setValue} = useForm<{name:string}>({
@@ -39,6 +41,10 @@ const CategoryForm: React.FC<categoryItemProps > = () => {
         ) as categoryItem | undefined
     
     console.log(category)
+
+
+  
+
 
     useEffect(() => {
         console.log('Fetched category:', category);

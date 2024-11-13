@@ -92,7 +92,7 @@ class CategoryDetailAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
-        if not request.user_staff:
+        if not request.user.is_staff:
             return Response({'message':'only admin has access to update category'}, status=status.HTTP_403_FORBIDDEN)
         category = get_object_or_404(Category, pk=pk)
         serializer = CategorySerializer(instance=category, data=request.data)
@@ -102,8 +102,8 @@ class CategoryDetailAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        # if not request.user_staff:
-        #     return Response({'message':'Only admin can delete the the category'}, status=status.HTTP_403_FORBIDDEN)
+        if not request.user.is_staff:
+            return Response({'message':'Only admin can delete the the category'}, status=status.HTTP_403_FORBIDDEN)
          
         category = get_object_or_404(Category, pk=pk)
         category.delete()

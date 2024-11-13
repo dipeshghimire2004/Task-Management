@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '../store/Hooks';
 import { RootState } from '../store/store';
 import axios from 'axios';
 import Breadcrumb from '../components/Breadcrumb';
-
+import Cookies from 'js-cookie';
 
 const Category: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -22,10 +22,12 @@ const Category: React.FC = () => {
 
     const onDelete=async (categoryId: number)=>{
         if(window.confirm("Are you sure want to delete this category item"))
+            
             try {
+                const token = Cookies.get('access');
                 await axios.delete(`http://127.0.0.1:8000/api/categories/${categoryId}/`,
                     {headers:{
-                        // Authorization:`Bearer ${accessToken}`
+                        Authorization:`Bearer ${token}`
                     }
 
                     }

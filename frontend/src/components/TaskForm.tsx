@@ -8,12 +8,19 @@ import { RootState } from '../store/store';
 import { useAppSelector } from '../store/Hooks';
 import { selectTasksById } from '../features/taskSlice';
 import { Task } from "../store/types";
-
-
+import Cookies from 'js-cookie';
+interface Category {
+  id: string;
+  name: string;
+}
+interface User {
+  id: string;
+  username: string;
+}
 
 const TaskForm: React.FC = () => {
-  const [categories,setCategories]=useState<string[]>([])
-  const [users, setUsers]=useState<string[]>([])
+  const [categories,setCategories]=useState<Category[]>([])
+  const [users, setUsers]=useState<User[]>([])
 
   const navigate = useNavigate();
   // const dispatch = useAppDispatch();
@@ -38,12 +45,24 @@ const TaskForm: React.FC = () => {
 
   useEffect(()=>{
     const fetchData=async()=>{
+      const token =Cookies.get('access')
       try {
-        const categoryResponse = await axios.get('http://127.0.0.1:8000/api/categories/')
+        const categoryResponse = await axios.get('http://127.0.0.1:8000/api/categories/',{
+          headers:{
+            Authorization: `Bearer ${token}`
+          },
+          withCredentials:true
+        })
         setCategories(categoryResponse.data)
 
-        const userResponse = await axios.get('http://127.0.0.1:8000/api/users/')
+        const userResponse = await axios.get('http://127.0.0.1:8000/api/users/',{
+          headers:{
+            Authorization: `Bearer ${token}`
+          },
+          withCredentials:true
+        })
         setUsers(userResponse.data)
+        console.log(userResponse.data)
       } catch (error) {
         console.error("error occured while fetching data",error)
       }
@@ -118,17 +137,18 @@ const TaskForm: React.FC = () => {
         <div className='mb-4'>
           <label htmlFor="category" className="block text-gray-700"> Category</label>
           <select
-            id='category'
-            className='w-full p-2 border border-gray-700 rounded-lg'
-            {...register('category',{required:'Category is required'})}
-          >
-            <option value="">
-              {categories.map((category:any)=>(
-                <option key={category.id} value={category.id}>{category.name}</option>
+              id="category"
+              className="w-full p-2 border border-gray-700 rounded-lg"
+              {...register('category', { required: 'Category is required' })}
+            >
+              <option value="">Select Category</option>
+              {categories.map((category: Category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
               ))}
-            </option>
+            </select>
             {errors.category && <span className="text-red-500">{errors.category.message}</span>}
-          </select>
         </div>
 
         <div className="mb-4">
@@ -139,7 +159,7 @@ const TaskForm: React.FC = () => {
             {...register('user', { required: 'Assigned To is required' })}
           >
             <option value="">Select User</option>
-            {users.map((user: any) => (
+            {users.map((user: User) => (
               <option key={user.id} value={user.id}>
                 {user.username}
               </option>
@@ -147,29 +167,7 @@ const TaskForm: React.FC = () => {
           </select>
           {errors.user && <span className="text-red-500">{errors.user.message}</span>}
         </div>
-        {/* Assigned To Input */}
-        {/* <Input
-          label="Assigned To"
-          id="user"
-          type="text"
-          placeholder="Assignee's name"
-          {...register('user', { required: 'Assigned To is required' })}
-        />
-        {errors.user && (
-          <span className="text-red-500">{errors.user.message}</span>
-        )} */}
-
-        {/* Start Date Input */}
-        {/* <Input
-          label="Start Date"
-          id="start_date"
-          type="date"
-          {...register('start_date', { required: 'Start date is required' })}
-        />
-        {errors.start_date && (
-          <span className="text-red-500">{errors.start_date.message}</span>
-        )} */}
-
+       
         {/* End Date Input */}
         <Input
           label="End Date"
@@ -229,3 +227,28 @@ const TaskForm: React.FC = () => {
 };
 
 export default TaskForm;
+
+
+
+ {/* Assigned To Input */}
+        {/* <Input
+          label="Assigned To"
+          id="user"
+          type="text"
+          placeholder="Assignee's name"
+          {...register('user', { required: 'Assigned To is required' })}
+        />
+        {errors.user && (
+          <span className="text-red-500">{errors.user.message}</span>
+        )} */}
+
+        {/* Start Date Input */}
+        {/* <Input
+          label="Start Date"
+          id="start_date"
+          type="date"
+          {...register('start_date', { required: 'Start date is required' })}
+        />
+        {errors.start_date && (
+          <span className="text-red-500">{errors.start_date.message}</span>
+        )} */}
