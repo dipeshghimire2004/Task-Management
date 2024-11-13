@@ -10,6 +10,7 @@ export interface Category {
     id: number; // Optional for new tasks
     title: string;
     category: string;
+    bookmarked:boolean;
     user: string;
     start_date: string;
     end_date: string;
@@ -19,4 +20,5 @@ export interface Category {
     completed?: boolean; // Optional, defaults to false
     category_name:string;
     user_name:string;
+    assigned_to_email:string;
 }

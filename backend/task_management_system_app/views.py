@@ -168,3 +168,11 @@ class TaskDetailAPIView(APIView):
     
     
 
+class ToggleBookmarkView(APIView):
+    permission_classes=[IsAuthenticated]
+    def post(self, request, title):
+        task=get_object_or_404(Task, title = title)
+        task.bookmarked=not task.bookmarked
+        user=request.user
+        task.save(user)
+        return Response({'bookmark':task.bookmarked}, status=status.HTTP_200_OK)

@@ -68,7 +68,7 @@ class TaskSerializer(serializers.ModelSerializer):
         model=Task
         # fields=('title', 'category','category_name','user_name', 'assigned_to','start_date','end_date','priority','description','location','completed')
         # fields='__all__' 
-        fields=('id','user','title','category_name','start_date','end_date','priority','description','location','completed','assigned_to_email')
+        fields=('id','user','bookmarked','title','category_name','start_date','end_date','priority','description','location','completed','assigned_to_email')
 
     def create(self, validated_data):
         #extracthte email for assgnment from the validated data

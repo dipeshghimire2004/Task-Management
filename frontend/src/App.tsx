@@ -22,11 +22,14 @@ function App() {
           <Route path='/' element={<Home/>} />
           <Route path='/categoryform' element={<CategoryForm/>} />
           <Route path='/categoryform/:id' element={<CategoryForm/>}/>
+          <Route path='/taskform' element={<TaskForm/>} />
           <Route path='/taskform/:taskId?' element={<TaskForm/>} />
           <Route path='/taskslist' element={<Tasks/>} />
-          <Route path='/taskdetails/:taskId' element={<Tasks/>} />
+          <Route path='/taskdetails/:id' element={<TaskDetails/>}/>
+          {/* <Route path='//taskdetails/:taskId' element={<Tasks/>} /> */}
+          {/* <Route path='/categories' element={<Category/>} /> */}
           <Route path='/categories' element={<Category/>} />
-          <Route path='/details/:taskId' element={<TaskDetails/>}/>
+
           <Route path='/searchresults' element={<SearchResults/>}/>
         </Routes>    
       </div>

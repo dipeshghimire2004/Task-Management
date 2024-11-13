@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useParams } from 'react-router-dom';
 import Button from '../components/Button';
 // import { Link } from 'react-router-dom';
-
+import Cookies from 'js-cookie';
 interface TaskDetailsProps {
   title: string;
   category: string;
@@ -20,13 +20,19 @@ interface TaskDetailsProps {
 const TaskDetails: React.FC = () => {
   const [taskDetails, setTaskDetails] = useState<TaskDetailsProps | null>(null);
   const [error, setError] = useState<string | null>(null); // State to hold error messages
-  const { taskId } = useParams<{ taskId: string }>();
+  const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
     const fetchTaskDetails = async () => {
       try {
-        const response = await axios.get<TaskDetailsProps>(`http://127.0.0.1:8000/api/tasks/${taskId}/`);
+        const token=Cookies.get('access')
+        const response = await axios.get<TaskDetailsProps>(`http://127.0.0.1:8000/api/tasks/${id}/`,{
+          headers:{
+            'Authorization':`Bearer ${token}` 
+          }
+        });
         setTaskDetails(response.data);
+        console.log(response.data);
       } catch (err) {
         console.error('Error occurred:', err);
         setError('Failed to load task details. Please try again later.'); // Set error message
@@ -34,7 +40,7 @@ const TaskDetails: React.FC = () => {
     };
 
     fetchTaskDetails();
-  }, [taskId]);
+  }, [id]);
 
   if (error) {
     return <div className="text-red-500 text-center">{error}</div>; // Display error message if it exists
@@ -49,7 +55,7 @@ const TaskDetails: React.FC = () => {
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="p-8 bg-white shadow-lg rounded-lg mx-auto max-w-2xl mt-12"
+      className="p-8 bg-black shadow-lg rounded-lg mx-auto max-w-2xl mt-12"
     >
       <h2 className="text-3xl font-bold text-center mb-6">{taskDetails.title}</h2>
 

@@ -45,13 +45,13 @@ const Tasks:React.FC = () => {
     };
   
   return (
-    <div className='text-black flex items-center'>
+    <div className='text-black flex flex-col items-center'>
         <Breadcrumb/>
         <h1>Tasks Assigned to '......'</h1>
        
         <motion.div className="w-full col-span-2 p-6 rounded-lg shadow-md" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
             <h3 className="font-semibold text-lg text-gray-700 mb-4">Tasks</h3>
-            <table className="min-w-full table-auto border border-gray-300">
+            <table className="min-w-full table-auto border border-gray-300 object-cover overflow-scroll">
               <thead>
                 <tr>
                   <th className="px-4 py-2 border text-gray-600">Title</th>
@@ -61,7 +61,7 @@ const Tasks:React.FC = () => {
                   <th className="px-4 py-2 border text-gray-600">Actions</th>
                 </tr>
               </thead>
-              <tbody className='overflow-hidden'>
+              <tbody className=''>
                 {tasks.map((task) => (
                   <motion.tr key={task.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="hover:bg-gray-100 transition">
                     <td className="border px-4 py-2 text-gray-700">{task.title}</td>
@@ -69,7 +69,7 @@ const Tasks:React.FC = () => {
                     <td className="border px-4 py-2 text-gray-700">{task.user_name}</td>
                     <td className="border px-4 py-2 text-gray-700">{task.completed ? 'Yes' : 'No'}</td>
                     <td className="border px-4 py-2 space-x-2">
-                      <div>
+                      <div className='flex flex-col lg:flex-row items-center content-between  w-1/2  lg:space-x-2'>
                         <Button bgColor='bg-green-600'><Link to={`/taskdetails/${task.id}`}>Details</Link></Button>
                         <Button bgColor='bg-blue-600'><Link to={`/taskform/${task.id}`}>Edit</Link></Button>
                         <Button onClick={() => onDelete(task.id)} bgColor='bg-red-600'>Delete</Button>
@@ -80,6 +80,10 @@ const Tasks:React.FC = () => {
               </tbody>
             </table>
           </motion.div>
+
+          <div className='mt-28'>
+            <Button><Link to='/taskform'>Create Task</Link></Button>
+          </div>
     </div>
   )
 }

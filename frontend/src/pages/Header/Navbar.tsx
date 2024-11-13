@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAppDispatch } from '../../store/Hooks';
 import { useNavigate } from 'react-router-dom';
 import { setSearchQuery } from '../../features/searchSlice';
-
+import clock from '../../assets/clock.gif'
 
 // interface TaskItem{
 //     title:string;
@@ -40,7 +40,10 @@ const Navbar:React.FC = () => {
   return (
     <div className=' w-full px-4 top-0 fixed  bg-black pb-6 text-white'>
         <nav className="flex justify-around items-center">
-        <h1 className="text-3xl font-bold"><Link to='/'>Task Management System</Link></h1>
+          <div>
+            <img className='h-10 w-10 object-cover' src={clock} alt="" />
+          </div>
+        <h1 className="text-bold lg:text-3xl font-bold"><Link to='/'>Task Management System</Link></h1>
           <form onSubmit={handleSearch} className="flex items-center bg-white shadow-md rounded-lg overflow-hidden">
             <input
               type="search"
@@ -59,7 +62,7 @@ const Navbar:React.FC = () => {
             </button>
           </form>
           <div className='space-x-4'>
-            <Link to="/tasks" className=" hover:text-blue-500 transition">Tasks</Link>
+            <Link to="/taskslist" className=" hover:text-blue-500 transition">Tasks</Link>
             <Link to="/categories" className=" hover:text-blue-500 transition">Categories</Link>
             <Link to="/logout" className="text-white px-3 py-2 rounded-lg bg-black hover:text-blue-500 transition">Logout</Link>
           </div>

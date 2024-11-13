@@ -1,5 +1,4 @@
 from django.urls import path
-# from .views import RegisterAPIView, LoginAPIView, LogoutAPIView, CategoryListCreateAPIView, CategoryDetailAPIView, TaskListCreateAPIView, TaskDetailAPIView
 from . import views
 
 
@@ -12,4 +11,5 @@ urlpatterns = [
     path('categories/<int:pk>/', views.CategoryDetailAPIView.as_view(), name='categories-detail'),
     path('tasks/', views.TaskListCreateAPIView.as_view(), name='task-list-create'),
     path('tasks/<int:pk>/', views.TaskDetailAPIView.as_view(), name='task-detail'),
+    path('tasks/<int:pk>/toogle_bookmark', views.ToggleBookmarkView.as_view(), name='toggle_bookmark'),
 ]
