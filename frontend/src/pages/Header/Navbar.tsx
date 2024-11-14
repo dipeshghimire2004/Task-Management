@@ -5,27 +5,16 @@ import { useAppDispatch } from '../../store/Hooks';
 import { useNavigate } from 'react-router-dom';
 import { setSearchQuery } from '../../features/searchSlice';
 import clock from '../../assets/clock.gif'
+import axios from 'axios';
+import { logoutUser } from '@/api/auth';
+import { Button } from '@/components';
+import toast,{Toaster} from 'react-hot-toast';
 
 // interface TaskItem{
 //     title:string;
 // }
 
 const Navbar:React.FC = () => {
-    // const [tasks, setTasks] = useState<TaskItem[]>([]);
-    // const [searchTask, setSearchTask] = useState<string>(''); 
-
-    // useEffect(()=>{
-    //     axios.post('http://127.0.0.1:8000/api/tasks/')
-    //     .then(response=>response.data)
-    //     .catch(error=>console.error)
-    // },[])
-    // const filteredTasks = tasks.filter((task) =>
-    //     task.title.toLowerCase().includes(searchTask.toLowerCase())
-    // );
-      // const searchItems = async (query: string) =>{
-      //   const response= await axios.get(`/http://127.0.0.1:8000/api/tasks/search?q=${query}`);
-      //   const response.data
-      // };
       const [input, SetInput]=useState<string>('');
       const dispatch = useAppDispatch();
       const navigate =  useNavigate();
@@ -36,9 +25,17 @@ const Navbar:React.FC = () => {
         navigate('/searchresults');
       };
 
+      const handleLogout=async()=>{
+        logoutUser()
+        toast.success("logout successfully")
+        navigate('/login')
+
+      }
+
 
   return (
     <div className=' w-full px-4 top-0 fixed  bg-black pb-6 text-white'>
+      <Toaster/>
         <nav className="flex justify-around items-center">
           <div>
             <img className='h-10 w-10 object-cover' src={clock} alt="" />
@@ -61,10 +58,11 @@ const Navbar:React.FC = () => {
               Search
             </button>
           </form>
-          <div className='space-x-4'>
+          <div className='flex items-center space-x-2'>
             <Link to="/taskslist" className=" hover:text-blue-500 transition">Tasks</Link>
             <Link to="/categories" className=" hover:text-blue-500 transition">Categories</Link>
-            <Link to="/logout" className="text-white px-3 py-2 rounded-lg bg-black hover:text-blue-500 transition">Logout</Link>
+            {/* <Link to="/logout" className="text-white px-3 py-2 rounded-lg bg-black hover:text-blue-500 transition">Logout</Link> */}
+            <Button onClick={handleLogout} className='w-20 bg-transparent font-bold hover:text-red-500 transition'>Logout</Button>
           </div>
         </nav>
     </div>

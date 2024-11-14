@@ -21,4 +21,5 @@ export interface Category {
     category_name:string;
     user_name:string;
     assigned_to_email:string;
+    username:string
 }

@@ -11,7 +11,6 @@ import { Task } from "../store/types";
 import Cookies from 'js-cookie';
 import toast,{Toaster} from 'react-hot-toast';
 
-
 interface Category {
   id: string;
   name: string;
@@ -24,7 +23,6 @@ interface User {
 const TaskForm: React.FC = () => {
   const [categories,setCategories]=useState<Category[]>([])
   const [users, setUsers]=useState<User[]>([])
-
   const navigate = useNavigate();
   // const dispatch = useAppDispatch();
   const { taskId } = useParams<{ taskId: string }>();
@@ -60,7 +58,8 @@ const TaskForm: React.FC = () => {
 
         const userResponse = await axios.get('http://127.0.0.1:8000/api/users/',{
           headers:{
-            Authorization: `Bearer ${token}`
+            'Content-Type':'application/json',
+            'Authorization': `Bearer ${token}`
           },
           withCredentials:true
         })
@@ -101,6 +100,8 @@ const TaskForm: React.FC = () => {
                       'Authorization':`Bearer ${token}`
            },
         });
+        toast.success("Task Updated Successfully")
+        navigate('/tasks')
         console.log('Task updated successfully');
       } else {
         const response = await axios.post(
@@ -108,12 +109,13 @@ const TaskForm: React.FC = () => {
           data,
           {
             headers: {
-              //  'Content-Type': 'application/json',
+               'Content-Type': 'application/json',
                'Authorization':`Bearer ${token}`
              },
              withCredentials:true
           }
         );
+        toast.success("Task Created Successfully")
         console.log('Task created successfully:', response.data);
       }
       navigate('/tasks');
@@ -121,6 +123,7 @@ const TaskForm: React.FC = () => {
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         console.error('Error while processing the task:', error.response.data);
+        toast.error('Error occured',error.response.data);
       }
     } finally {
       setLoading(false);
@@ -151,11 +154,11 @@ const TaskForm: React.FC = () => {
 
 
 <div className="mb-4">
-  <label htmlFor="category" className="block text-gray-700">Category</label>
+  <label htmlFor="category_name" className="block text-gray-700">Category</label>
   <select
-    id="category"
+    id="category_name"
     className="w-full p-2 border border-gray-700 rounded-lg"
-    {...register('category', { required: 'Category is required' })}
+    {...register('category_name', { required: 'Category is required' })}
   >
     <option value="">Select Category</option>
     {categories.map((category: Category) => (
@@ -164,44 +167,46 @@ const TaskForm: React.FC = () => {
       </option>
     ))}
   </select>
-  {errors.category && <span className="text-red-500">{errors.category.message}</span>}
+  {errors.category_name && <span className="text-red-500">{errors.category_name.message}</span>}
 </div>
 
-{/* <div className="mb-4">
-  <label htmlFor="user" className="block text-gray-700">Assigned To</label>
-  <select
-    id="user"
-    className="w-full p-2 border border-gray-300 rounded-lg"
-    {...register('user', { required: false})}
-  >
-    <option value="">Select User</option>
-    {users.map((user: User) => (
-      <option key={user.id} value={user.id}>
-        {user.email}
-      </option>
-    ))}
-  </select>
-  {errors.user && <span className="text-red-500">{errors.user.message}</span>}
-</div> */}
+{isUpdate ?(
 
-{/* 
-for creating task */}
-<div className="mb-4">
-  <label htmlFor="assigned_to_email" className="block text-gray-700">Assigned To</label>
-  <select
-    id="assigned_to_email"
-    className="w-full p-2 border border-gray-300 rounded-lg"
-    {...register('assigned_to_email', { required: false })}
-  >
-    <option value="">Select User</option>
-    {users.map((user: User) => (
-      <option key={user.id} value={user.id}>
-        {user.email}
-      </option>
-    ))}
-  </select>
-  {errors.assigned_to_email && <span className="text-red-500">{errors.assigned_to_email.message}</span>}
-</div>
+
+    <div className="mb-4">
+      <label htmlFor="user" className="block text-gray-700">Assigned To(update)</label>
+      <select
+        id="user"
+        className="w-full p-2 border border-gray-300 rounded-lg"
+        {...register('user', { required: false })}
+      >
+        <option value="">Select User</option>
+        {users.map((user: User) => (
+          <option key={user.id} value={user.email}>
+            {user.email}
+          </option>
+        ))}
+      </select>
+      {errors.user && <span className="text-red-500">{errors.user.message}</span>}
+    </div>
+):(
+    <div className="mb-4">
+      <label htmlFor="assigned_to_email" className="block text-gray-700">Assigned To(create)</label>
+      <select
+        id="assigned_to_email"
+        className="w-full p-2 border border-gray-300 rounded-lg"
+        {...register('assigned_to_email', { required: false})}
+      >
+        <option value="">Select User</option>
+        {users.map((user: User) => (
+          <option key={user.id} value={user.email}>
+            {user.email}
+          </option>
+        ))}
+      </select>
+      {errors.assigned_to_email && <span className="text-red-500">{errors.assigned_to_email.message}</span>}
+    </div>
+)}
 
        
        {/* Start Date Input */}
@@ -294,6 +299,22 @@ for creating task */}
 export default TaskForm;
 
 
+// <div className="mb-4">
+//   <label htmlFor="category" className="block text-gray-700">Category</label>
+//   <select
+//     id="category"
+//     className="w-full p-2 border border-gray-700 rounded-lg"
+//     {...register('category', { required: 'Category is required' })}
+//   >
+//     <option value="">Select Category</option>
+//     {categories.map((category: Category) => (
+//       <option key={category.id} value={category.id}>
+//         {category.name}
+//       </option>
+//     ))}
+//   </select>
+//   {errors.category && <span className="text-red-500">{errors.category.message}</span>}
+// </div>
 
  {/* Assigned To Input */}
         {/* <Input
@@ -308,3 +329,8 @@ export default TaskForm;
         )} */}
 
         
+
+
+
+{/* 
+for creating task */}

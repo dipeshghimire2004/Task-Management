@@ -86,15 +86,15 @@ const Login: React.FC = () => {
               className="border border-gray-300 rounded-md w-full p-2 pr-10"
             />
             {/* Toggle password visibility button */}
-            <Button
+            <button
               type="button"
               onClick={togglePasswordVisibility}
-              bgColor="transparent"
-              textColor=""
-              className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-500"
+              // bgColor="transparent"
+              // textColor=""
+              className="absolute top-3/4 right-2 transform -translate-y-2/3 text-gray-500"
             >
               {passwordVisible ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
-            </Button>
+            </button>
             {errors.password && <span className="text-red-500">{errors.password.message}</span>}
           </div>
 

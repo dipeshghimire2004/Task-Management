@@ -3,11 +3,12 @@ import { RootState  } from '../store/store';
 import { useAppDispatch,useAppSelector } from '../store/Hooks';
 import { fetchTasks, selectTasks } from '../features/taskSlice';
 import { motion } from 'framer-motion';
-import Button from '../components/Button';
+// import Button from '../components/Button';
+import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Breadcrumb from '../components/Breadcrumb';
-
+import { DeleteDialogBox } from '@/components/DeleteDialogBox';
 const Tasks:React.FC = () => {
 
   // const dispatch = useAppDispatch();
@@ -45,9 +46,9 @@ const Tasks:React.FC = () => {
     };
   
   return (
-    <div className='text-black flex flex-col items-center'>
+    <div className='lg:p-6 lg:mx-12 text-black flex flex-col '>
         <Breadcrumb/>
-        <h1>Tasks Assigned to '......'</h1>
+        {/* <h1>Tasks Assigned to '......'</h1> */}
        
         <motion.div className="w-full col-span-2 p-6 rounded-lg shadow-md" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
             <h3 className="font-semibold text-lg text-gray-700 mb-4">Tasks</h3>
@@ -69,10 +70,12 @@ const Tasks:React.FC = () => {
                     <td className="border px-4 py-2 text-gray-700">{task.user_name}</td>
                     <td className="border px-4 py-2 text-gray-700">{task.completed ? 'Yes' : 'No'}</td>
                     <td className="border px-4 py-2 space-x-2">
-                      <div className='flex flex-col lg:flex-row items-center content-between  w-1/2  lg:space-x-2'>
-                        <Button bgColor='bg-green-600'><Link to={`/taskdetails/${task.id}`}>Details</Link></Button>
-                        <Button bgColor='bg-blue-600'><Link to={`/taskform/${task.id}`}>Edit</Link></Button>
-                        <Button onClick={() => onDelete(task.id)} bgColor='bg-red-600'>Delete</Button>
+                      <div className='flex flex-col lg:flex-row items-center content-between space-y-1 lg:space-x-2'>
+                        <Button ><Link to={`/taskdetails/${task.id}`}>Details</Link></Button>
+                        <Button className='bg-green-600'><Link to={`/taskform/${task.id}`}>Update</Link></Button>
+                        {/* <Button onClick={() => onDelete(task.id)} bgColor='bg-red-600'>Delete</Button> */}
+                        <DeleteDialogBox onDelete={()=>onDelete(task.id)}
+                                        Name={task.title}/>
                       </div>
                     </td>
                   </motion.tr>

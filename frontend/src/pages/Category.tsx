@@ -8,6 +8,9 @@ import { RootState } from '../store/store';
 import axios from 'axios';
 import Breadcrumb from '../components/Breadcrumb';
 import Cookies from 'js-cookie';
+import { DeleteDialogBox } from '@/components/DeleteDialogBox';
+// import { DeleteDialogBox } from '../components/DeleteDialogBox';
+// import Button from '../components/Button';
 
 const Category: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -21,7 +24,7 @@ const Category: React.FC = () => {
     console.log(categories)
 
     const onDelete=async (categoryId: number)=>{
-        if(window.confirm("Are you sure want to delete this category item"))
+        // if(window.confirm("Are you sure want to delete this category item"))
             
             try {
                 const token = Cookies.get('access');
@@ -41,7 +44,7 @@ const Category: React.FC = () => {
             }
     }
     return (
-        <div className="p-6 mx-12 bg-gray-100 rounded-lg shadow-md">
+        <div className="lg:p-6 lg:mx-12 bg-gray-100 rounded-lg shadow-md">
             <Breadcrumb/>
             <h1 className="text-2xl text-center font-bold mb-4">Categories</h1>
             
@@ -54,11 +57,15 @@ const Category: React.FC = () => {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                         >
-                            <div className="flex justify-between items-center">
+                            <div className="flex justify-between items-center overflow-hidden">
                                 <div className="text-lg font-semibold text-gray-800">{category.name}</div>
                                 <div className="flex space-x-4">
-                                    <Button onClick={()=>onDelete(category.id)} bgColor="bg-red-500">Delete</Button>
-                                    <Button>Details</Button>
+                                    {/* <Button onClick={()=>onDelete(category.id)} bgColor="bg-red-500">Delete</Button> */}
+                                    <DeleteDialogBox onDelete={()=>onDelete(category.id)}
+                                        Name={category.name}/>
+                                            
+                                    
+                                    <Button className='bg-green-500'>Details</Button>
                                     <Button>
                                         <Link to={`/categoryform/${category.id}`}>Update</Link>
                                     </Button>
@@ -70,6 +77,7 @@ const Category: React.FC = () => {
             ) : (
                 <p className="text-center text-gray-500">No categories available.</p>
             )}
+            <Button className='mt-40'><Link to='/categoryform'>Create Category</Link></Button>
         </div>
     );
 };
