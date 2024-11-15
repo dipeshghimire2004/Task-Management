@@ -33,12 +33,9 @@ export const fetchTasks=createAsyncThunk<Task[], void, {rejectValue:string}>(
         
     } catch (error) {
         const errorMsg = isAxiosError(error) 
-    ? error.response?.data?.message || 'Failed to fetch tasks'
-    : 'An unknown error occurred';
-return rejectWithValue(errorMsg);
-
-
-        return rejectWithValue("An unknown error occurred");
+            ? error.response?.data?.message || 'Failed to fetch tasks'
+            : 'An unknown error occurred';
+        return rejectWithValue(errorMsg);
     }
 });
 

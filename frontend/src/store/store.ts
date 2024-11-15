@@ -2,10 +2,11 @@ import { configureStore } from "@reduxjs/toolkit"
 import taskReducer from '../features/taskSlice'
 import categoryReducer from '../features/categorySlice';
 import searchReducer from '../features/searchSlice'
-
+import authReducer from '../features/authSlice'
 
 const store=configureStore({
     reducer:{
+        auth:authReducer,
         task:taskReducer,
         category:categoryReducer,
         search:searchReducer

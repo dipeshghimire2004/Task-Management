@@ -101,7 +101,7 @@ const TaskForm: React.FC = () => {
            },
         });
         toast.success("Task Updated Successfully")
-        navigate('/tasks')
+        navigate('/taskslist')
         console.log('Task updated successfully');
       } else {
         const response = await axios.post(
@@ -115,10 +115,11 @@ const TaskForm: React.FC = () => {
              withCredentials:true
           }
         );
+
         toast.success("Task Created Successfully")
         console.log('Task created successfully:', response.data);
       }
-      navigate('/tasks');
+      navigate('/taskslist');
       reset(); // Reset the form after submission
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -131,10 +132,10 @@ const TaskForm: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+    <div className="flex justify-center items-center min-h-screen  bg-gray-900 p-4">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
+        className="bg-black p-8 rounded-lg shadow-lg w-full max-w-md"
       >
         <h2 className="text-3xl font-bold mb-6 text-center text-blue-500">
           {isUpdate ? 'Update Task' : 'Create New Task'}
@@ -154,9 +155,26 @@ const TaskForm: React.FC = () => {
 
 
 <div className="mb-4">
+  <label htmlFor="category" className="block text-gray-700">Category</label>
+  <select
+    id="category"
+    className="w-full p-2 border border-gray-700 rounded-lg"
+    {...register('category', { required: 'Category is required' })}
+  >
+    <option value="">Select Category</option>
+    {categories.map((category: Category) => (
+      <option key={category.id} value={category.id}>
+        {category.name}
+      </option>
+    ))}
+  </select>
+  {errors.category && <span className="text-red-500">{errors.category.message}</span>}
+</div>
+{/* <div className="mb-4">
   <label htmlFor="category_name" className="block text-gray-700">Category</label>
   <select
     id="category_name"
+    
     className="w-full p-2 border border-gray-700 rounded-lg"
     {...register('category_name', { required: 'Category is required' })}
   >
@@ -168,8 +186,7 @@ const TaskForm: React.FC = () => {
     ))}
   </select>
   {errors.category_name && <span className="text-red-500">{errors.category_name.message}</span>}
-</div>
-
+</div> */}
 {isUpdate ?(
 
 

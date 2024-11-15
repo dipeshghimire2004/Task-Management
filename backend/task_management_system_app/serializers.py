@@ -57,30 +57,63 @@ class CategorySerializer(serializers.ModelSerializer):
         # fields='__all__'
 
 
+
 class TaskSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
-    user=serializers.CharField(source='assigned_to.email', read_only=True)
-
-    #accept an email for assigning a user to the task 
+    user = serializers.CharField(source='assigned_to.email', read_only=True)
     assigned_to_email = serializers.EmailField(write_only=True)
 
     class Meta:
-        model=Task
-        # fields=('title', 'category','category_name','user_name', 'assigned_to','start_date','end_date','priority','description','location','completed')
-        # fields='__all__' 
-        fields=('id','user','bookmarked','title','category_name','start_date','end_date','priority','description','location','completed','assigned_to_email')
+        model = Task
+        fields = (
+            'id', 'user', 'bookmarked', 'title', 'category','category_name', 'start_date', 
+            'end_date', 'priority', 'description', 'location', 'completed', 'assigned_to_email'
+        )
 
     def create(self, validated_data):
-        #extracthte email for assgnment from the validated data
-        assigned_to_email=validated_data.pop('assigned_to_email', None)
+        #remove the user if it exists
+        validated_data.pop('user',None)
+        # Extract the `assigned_to_email` field and remove it from `validated_data`
+        assigned_to_email = validated_data.pop('assigned_to_email', None)
 
+        # Assign the user if the email is provided and the user exists
         if assigned_to_email:
             try:
-                assgined_to_user = User.objects.get(email = assigned_to_email)
+                assigned_to_user = User.objects.get(email=assigned_to_email)
+                validated_data['assigned_to'] = assigned_to_user
             except User.DoesNotExist:
                 raise serializers.ValidationError(f"User with email {assigned_to_email} does not exist.")
-            
-            validated_data['assigned_to'] = assgined_to_user
 
-        task = super().create(validated_data)
+        # Create the task with remaining validated data
+        task = Task.objects.create(**validated_data)
         return task
+    
+
+# class TaskSerializer(serializers.ModelSerializer):
+#     category_name = serializers.CharField(source='category.name', read_only=True)
+#     user=serializers.CharField(source='assigned_to.email', read_only=True)
+
+#     #accept an email for assigning a user to the task 
+#     assigned_to_email = serializers.EmailField(write_only=True)
+
+#     class Meta:
+#         model=Task
+#         # fields=('title', 'category','category_name','user_name', 'assigned_to','start_date','end_date','priority','description','location','completed')
+#         # fields='__all__' 
+#         fields=('id','user','bookmarked','title','category_name','start_date','end_date','priority','description','location','completed','assigned_to_email')
+
+#     def create(self, validated_data):
+#         #extracthte email for assgnment from the validated data
+#         assigned_to_email=validated_data.pop('assigned_to_email', None)
+
+#         if assigned_to_email:
+#             try:
+#                 assgined_to_user = User.objects.get(email = assigned_to_email)
+#                 validated_data['assigned_to']=assgined_to_user
+#             except User.DoesNotExist:
+#                 raise serializers.ValidationError(f"User with email {assigned_to_email} does not exist.")
+            
+#             # validated_data['assigned_to'] = assgined_to_user
+
+#         task = super().create(**validated_data)
+#         return task

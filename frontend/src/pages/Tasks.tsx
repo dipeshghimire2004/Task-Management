@@ -67,7 +67,7 @@ const Tasks:React.FC = () => {
                   <motion.tr key={task.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="hover:bg-gray-100 transition">
                     <td className="border px-4 py-2 text-gray-700">{task.title}</td>
                     <td className="border px-4 py-2 text-gray-700">{task.category_name}</td>
-                    <td className="border px-4 py-2 text-gray-700">{task.user_name}</td>
+                    <td className="border px-4 py-2 text-gray-700">{task.user}</td>
                     <td className="border px-4 py-2 text-gray-700">{task.completed ? 'Yes' : 'No'}</td>
                     <td className="border px-4 py-2 space-x-2">
                       <div className='flex flex-col lg:flex-row items-center content-between space-y-1 lg:space-x-2'>

@@ -9,6 +9,7 @@ import CategoryForm from './components/CategoryForm';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import SearchResults from './pages/SearchResults';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -20,14 +21,13 @@ function App() {
         <Route path="/login" element={<Login />} />
 
           <Route path='/' element={<Home/>} />
-          <Route path='/categoryform' element={<CategoryForm/>} />
-          <Route path='/categoryform/:id' element={<CategoryForm/>}/>
-          <Route path='/taskform' element={<TaskForm/>} />
-          <Route path='/taskform/:taskId?' element={<TaskForm/>} />
+          <Route path='/categoryform' element={<ProtectedRoute><CategoryForm/></ProtectedRoute> }/>
+          <Route path='/categoryform/:id' element={<ProtectedRoute><CategoryForm/></ProtectedRoute>}/>
+          <Route path='/taskform' element={<ProtectedRoute><TaskForm/></ProtectedRoute>} />
+          <Route path='/taskform/:taskId?' element={<ProtectedRoute><TaskForm/></ProtectedRoute>} />
           <Route path='/taskslist' element={<Tasks/>} />
           <Route path='/taskdetails/:id' element={<TaskDetails/>}/>
-          {/* <Route path='//taskdetails/:taskId' element={<Tasks/>} /> */}
-          {/* <Route path='/categories' element={<Category/>} /> */}
+
           <Route path='/categories' element={<Category/>} />
 
           <Route path='/searchresults' element={<SearchResults/>}/>
@@ -38,3 +38,9 @@ function App() {
 }
 
 export default App;
+
+
+
+
+          {/* <Route path='//taskdetails/:taskId' element={<Tasks/>} /> */}
+          {/* <Route path='/categories' element={<Category/>} /> */}

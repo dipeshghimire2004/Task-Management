@@ -11,3 +11,10 @@ export interface Task {
     location: string;
     completed?: boolean; // Optional, defaults to false
 }
+
+export interface User{
+    id:number;
+    status:boolean;
+    username:string;
+    email:string;
+}
