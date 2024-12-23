@@ -4,16 +4,25 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AiOutlineEyeInvisible, AiOutlineEye } from 'react-icons/ai';
 import { Input, Button } from '../components'; // Custom components for input and button
 import toast, { Toaster } from 'react-hot-toast';
-import { registerUser } from '../api/auth';
-// import logo from '../assets/'
+import { registerUser} from '../api/auth';
 import logo from '../assets/alarm.gif'
 import registerimg from '../assets/registerpg.png'
+import { SignInWithGoogle } from '@/components/firebase';
+import { FcGoogle } from "react-icons/fc";
 
 type FormInputs = {
   username:string;
   email: string;
   password: string;
 };
+
+interface UserTypes {
+  id: string;
+  username: string;
+  email: string;
+  photoUrl?: string; // Optional
+  password?: string; // Optional for Google
+}
 
 const Register: React.FC = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -47,17 +56,39 @@ const Register: React.FC = () => {
       // }
     }
   };
+  
+  // Handle Google sign up
+  const handleGooglelogin=async()=>{
+    try{
+        const user = await SignInWithGoogle();
+    
+        // const googleData:UserTypes = {
+          // id: user.uid,
+          // username: user.displayName || 'no username',
+          // email: user.email || 'no-email@domain.com',
+          // photoUrl: user.photoURL || '',
+
+        // };
+        // await googleAuth(googleData)
+        toast.success('Google sign-in successful!');
+        // toast.success(`Welcome, ${user.displayName || user}`)
+        navigate('/login');
+    }catch(error:any){
+      console.log("Gogle signin failed")
+      toast.error(error.message || 'Google Sign In failed');
+    }
+  }
 
   return (
-    <div className="flex justify-center space-x-20 items-center min-h-screen bg-gray-50">
+    <div className="flex justify-center space-x-20 items-center mt-10 ">
       {/* Toast notifications */}
       <Toaster />
-    <div>
-      
-        <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-          <div className='flex space-x-4 border-b-2'>
-            <img className='w-10 h-10' src={logo} alt='' />
-            <h2 className="text-2xl font-semibold mb-6 text-center">Register</h2>
+    <div className='bg-white shadow-xl px-12 flex flex-col items-center border-b-2 '>
+       
+        <form onSubmit={handleSubmit(onSubmit)} className=" px-6 py-4 rounded-lg  w-full max-w-md" >
+          <div className='flex items-center space-x-4 border-b-2 mb-4'>
+            <img className='w-16 h-16 ' src={logo} alt='' />
+            <h2 className="text-4xl font-semibold text-center">Register</h2>
           </div>
 
           <div className='mb-4 mt-2'>
@@ -130,6 +161,18 @@ const Register: React.FC = () => {
             <Link to="/login" className="text-blue-500 hover:underline">Login</Link>
           </div>
         </form>
+        <div className='flex flex-col items-center space-y-3 bg-white mb-4'>
+          <p>---------- or ----------</p>
+          <Button onClick={handleGooglelogin}
+          bgColor='transparent'
+            className="w-full rounded-lg flex items-center space-x-3 py-2  shadow-2xl shadow-gray-500 hover:bg-gray-100 "
+          >
+            <div><FcGoogle /></div>
+          <p className='text-black'>
+          Sign In With Google  
+          </p>
+          </Button>
+        </div>
     </div>
     <div>
         <img src={registerimg} alt="" />

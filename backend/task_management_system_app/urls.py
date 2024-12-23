@@ -12,4 +12,6 @@ urlpatterns = [
     path('tasks/', views.TaskListCreateAPIView.as_view(), name='task-list-create'),
     path('tasks/<int:pk>/', views.TaskDetailAPIView.as_view(), name='task-detail'),
     path('tasks/<int:pk>/toogle_bookmark', views.ToggleBookmarkView.as_view(), name='toggle_bookmark'),
+    path ('auth/google/', views.GoogleRegisterSerializer, name='google'),
+    path ('auth/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
 ]

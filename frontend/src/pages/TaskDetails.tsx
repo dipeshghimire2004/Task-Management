@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { color, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useParams } from 'react-router-dom';
 import Button from '../components/Button';
 import Cookies from 'js-cookie';
@@ -104,7 +104,7 @@ const TaskDetails: React.FC = () => {
       color='bg-red-600'
     }
     return(
-      <div className={`h6 w-6 rounded-full px-2 ${color}`}>{priority}</div>
+      <div className={` px-12  shadow-lg rounded-full  ${color}`}>{priority}</div>
     )
   }
 
@@ -123,18 +123,18 @@ const TaskDetails: React.FC = () => {
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="p-8 bg-black shadow-lg rounded-lg mx-auto max-w-2xl mt-12"
+      className="p-6  shadow-lg rounded-lg mx-auto max-w-2xl mt-12"
     >
       <h2 className="text-3xl font-bold text-center mb-6">{taskDetails.title}</h2>
 
-      <div className="space-y-4 text-gray-700">
+      <div className="space-y-2 text-gray-700">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-gray-100 p-4 rounded-lg shadow-md"
+          className="bg-gray-100 p-4 rounded-lg  shadow-md"
         >
-          <p><span className="font-semibold">Category:</span> {taskDetails.category_name}</p>
+          <p className='text-2xl'><span className="font-semibold ">Category:</span> {taskDetails.category_name}</p>
           <p><span className="font-semibold">Assigned To:</span> {taskDetails.user}</p>
         </motion.div>
 
@@ -142,19 +142,19 @@ const TaskDetails: React.FC = () => {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-gray-100 p-4 rounded-lg shadow-md"
+          className=" p-4 rounded-lg shadow-md"
         >
-          <p><span className="font-semibold">Start Date:</span> {taskDetails.start_date}</p>
-          <p><span className="font-semibold">End Date:</span> {taskDetails.end_date}</p>
+          <p><span className="font-semibold text-green-600">Start Date:</span> {taskDetails.start_date}</p>
+          <p><span className="font-semibold text-red-600">End Date:</span> {taskDetails.end_date}</p>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-gray-100 p-4 rounded-lg shadow-md"
+          className=" px-4 rounded-lg shadow-md"
         >
-           <p className='flex space-x-4'><span className="font-semibold ">Priority:</span> <PriorityColor priority={taskDetails.priority} /></p>
+           <p className='flex space-x-4 font-bold text-left'><span className="font-semibold ">Priority:</span> <PriorityColor priority={taskDetails.priority} /></p>
           <p><span className="font-semibold">Location:</span> {taskDetails.location}</p>
         </motion.div>
 
@@ -162,7 +162,7 @@ const TaskDetails: React.FC = () => {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-gray-100 p-4 rounded-lg shadow-md"
+          className=" p-4 rounded-lg shadow-md"
         >
           <p><span className="font-semibold">Description:</span> {taskDetails.description}</p>
         </motion.div>
@@ -171,7 +171,7 @@ const TaskDetails: React.FC = () => {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.6 }}
-          className="bg-gray-100 p-4 rounded-lg shadow-md"
+          className=" p-4 rounded-lg shadow-md"
         >
           <p>
             <span className="font-semibold">Completed:</span>{' '}

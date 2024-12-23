@@ -6,6 +6,9 @@ import { Input, Button } from '../components'; // Custom components for input an
 import toast, { Toaster } from 'react-hot-toast';
 import { loginUser } from '../api/auth';
 import image from '../assets/login.webp'
+import { login } from '@/features/authSlice';
+import { useAppDispatch } from '@/store/Hooks';
+import logo from '../assets/alarm.gif'
 
 type FormInputs = {
   email: string;
@@ -15,7 +18,7 @@ type FormInputs = {
 const Login: React.FC = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const navigate = useNavigate();
-
+  const dispatch = useAppDispatch();
   // Initialize react-hook-form
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormInputs>();
 
@@ -27,8 +30,10 @@ const Login: React.FC = () => {
   // Handle form submission
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     try {
-       await loginUser(data);
-     
+       const response=await loginUser(data);
+      const udata=dispatch(login({userdata:response.data, accessToken:response.data.access}))
+      console.log(response)
+      console.log(udata)
       toast.success("Login successful!");
 
       setTimeout(() => {
@@ -46,7 +51,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center mt-24 p-10 shadow-md ">
+    <div className="flex items-center justify-center mt-24 p-10 ">
       {/* Toast notifications */}
       <Toaster />
       <div>
@@ -54,7 +59,10 @@ const Login: React.FC = () => {
 
         {/* Login Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-          <h2 className="text-2xl font-semibold mb-6 text-center">Login</h2>
+        <div className='flex items-center space-x-4 border-b-2 mb-4'>
+            <img className='w-16 h-16 ' src={logo} alt='' />
+            <h2 className="text-4xl font-semibold text-center">Login</h2>
+          </div>
 
           {/* Email Input Field */}
           <div className="mb-4">

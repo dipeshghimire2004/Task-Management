@@ -5,16 +5,18 @@ import { useAppDispatch } from '../../store/Hooks';
 import { useNavigate } from 'react-router-dom';
 import { setSearchQuery } from '../../features/searchSlice';
 import clock from '../../assets/clock.gif'
-import axios from 'axios';
 import { logoutUser } from '@/api/auth';
 import { Button } from '@/components';
 import toast,{Toaster} from 'react-hot-toast';
+import { useAuth0 } from "@auth0/auth0-react";
 
 // interface TaskItem{
 //     title:string;
 // }
 
 const Navbar:React.FC = () => {
+      const { loginWithRedirect } = useAuth0();
+
       const [input, SetInput]=useState<string>('');
       const dispatch = useAppDispatch();
       const navigate =  useNavigate();
@@ -34,7 +36,7 @@ const Navbar:React.FC = () => {
 
 
   return (
-    <div className=' w-full px-4 top-0 fixed  bg-black pb-6 text-white'>
+    <div className=' w-full p-4 top-0 fixed  bg-black pb-6 text-white'>
       <Toaster/>
         <nav className="flex justify-around items-center">
           <div>
@@ -63,6 +65,7 @@ const Navbar:React.FC = () => {
             <Link to="/categories" className=" hover:text-blue-500 transition">Categories</Link>
             {/* <Link to="/logout" className="text-white px-3 py-2 rounded-lg bg-black hover:text-blue-500 transition">Logout</Link> */}
             <Button onClick={handleLogout} className='w-20 bg-transparent font-bold hover:text-red-500 transition'>Logout</Button>
+            <button onClick={() => loginWithRedirect()}>LogIn</button>
           </div>
         </nav>
     </div>

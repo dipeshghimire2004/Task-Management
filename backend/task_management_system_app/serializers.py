@@ -2,6 +2,7 @@
 from rest_framework import serializers
 from .models import Category, Task
 from django.contrib.auth import get_user_model, authenticate
+from .models import CustomUser
 
 User=get_user_model()
 
@@ -25,6 +26,29 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         user.set_password(validated_data['password'])     #hash the password
         user.save()
+        return user
+
+class GoogleRegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=False, default='googleuser')
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'password', 'profile_picture', 'is_google_user')
+
+    def create(self, validated_data):
+        user, created =CustomUser.objects.get_or_create(
+            email=validated_data['email'],
+            defaults={
+                'username':validated_data['username'],
+                'profile_picture':validated_data.get('profile_picture', ''),
+                'is_google_user':True,
+                'password':validated_data.get('password', ''),
+            },
+        )
+        if created:
+            #Is a new user is created, set the password
+            user.set_password(validated_data['password'])
+            user.save()
         return user
 
 class LoginSerializer(serializers.Serializer):

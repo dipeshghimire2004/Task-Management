@@ -133,6 +133,7 @@ const TaskForm: React.FC = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen  bg-gray-900 p-4">
+      <Toaster/>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="bg-black p-8 rounded-lg shadow-lg w-full max-w-md"

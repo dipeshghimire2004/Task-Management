@@ -23,7 +23,7 @@ const Button: React.FC<ButtonProps> = ({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`px-4 py-2 w-full rounded text-white hover:bg-opacity-90 disabled:bg-gray-400 ${bgColor} ${className}`}
+      className={`px-4 py-2 w-full rounded text-white duration-100 hover:bg-opacity-90 disabled:bg-gray-400 ${bgColor} ${className}`}
       {...props} // Spread the props separately
     >
       {children}

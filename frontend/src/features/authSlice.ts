@@ -21,7 +21,10 @@ const authSlice=createSlice({
             state.userdata=action.payload.userdata;
             state.accessToken=action.payload.accessToken   
 
-            Cookies.set('access', action.payload.accessToken)
+            Cookies.set('access', action.payload.accessToken,{
+                expires:1,
+                sameSite:"Lax"
+            })
         },
         logout:(state)=>{
             state.userdata=null;

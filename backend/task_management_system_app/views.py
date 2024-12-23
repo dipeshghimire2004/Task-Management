@@ -5,13 +5,19 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Category, Task
-from .serializers import CategorySerializer, TaskSerializer, RegisterSerializer, LoginSerializer, UserSerializer
+from .serializers import CategorySerializer, TaskSerializer, RegisterSerializer, LoginSerializer, UserSerializer, GoogleRegisterSerializer
 from rest_framework.decorators import action
 from django.db.models import Q
 from .permissions import IsAdminUserOrReadOnly 
 from django.contrib.auth import get_user_model
+from rest_framework.exceptions import AuthenticationFailed
+from .models import CustomUser
+from rest_framework_simplejwt.views import TokenObtainPairView
+from google.auth.transport import requests
+from google.oauth2 import id_token
 
 User=get_user_model()
+
 
 
 # Authentication Views
@@ -26,14 +32,36 @@ class RegisterAPIView(APIView):
                             status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class GoogleRegisterview(APIView):
+    permission_classes = [AllowAny]
+    def post(self,request):
+        serializer = GoogleRegisterSerializer(data=request.data)
+        if serializer.is_valid:
+            user=serializer.save()
+            return Response({'message':'Google user registered successfully'}, status= status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        user = CustomUser.objects.filter(email=email).first()
+        if user and user.is_google_user:
+            return Response({"error":'Google users must login with Google'}, status=status.HTTP_400_BAD_REQUEST)
+        return super.post(request, *args, **kwargs)
+
 
 class LoginAPIView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+     
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data
+            if user.is_google_user:
+                return Response({'error':'Google users must login with Google'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            #Generate JWT tokens for normal user
             refresh = RefreshToken.for_user(user)
             return Response({
                 'refresh': str(refresh),
@@ -41,6 +69,35 @@ class LoginAPIView(APIView):
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class GoogleLoginView(APIView):
+    permission_classes=[AllowAny]
+
+    def post(self, request):
+        token =  request.data.get('token')
+
+        try:
+            #verify the google login
+            id_info = id_token.verify_oauth2_token(token, requests.Request())
+
+            #Extract user information
+            email= id_info['email']
+            username=id_info.get('name')
+            profilepicture = id_info.get('picture')
+
+            #check if the user exists on database
+            user, created
+        except ValueError as e:
+            return Response({'error': 'Invalid Google token'}, status=400)
+
+        email = request.data.get('email')
+        user =  CustomUser.objects.filter(email=email, isgoogle=True).first()
+        if user:
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'refresh':str(refresh),
+                'access':str(refresh.access_token),
+            },status=status.HTTP_200_OK)
+        return Response({'error':'USer not found or not a google user'}, status=status.HTTP_400_BAD_REQUEST)
 
 class LogoutAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -170,9 +227,11 @@ class TaskDetailAPIView(APIView):
 
 class ToggleBookmarkView(APIView):
     permission_classes=[IsAuthenticated]
+    
     def post(self, request, title):
         task=get_object_or_404(Task, title = title)
         task.bookmarked=not task.bookmarked
-        user=request.user
-        task.save(user)
+        # user=request.user
+        # task.save(user)
+        task.save()
         return Response({'bookmark':task.bookmarked}, status=status.HTTP_200_OK)

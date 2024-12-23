@@ -8,24 +8,32 @@ import { useAppDispatch, useAppSelector } from '../store/Hooks';
 import { fetchCategories, selectCategories } from '../features/categorySlice';
 import { RootState } from '../store/store';
 import { DeleteDialogBox } from '@/components/DeleteDialogBox';
+import { useGetCategoriesQuery } from '@/features/categoriesApiSlice';
+import { useGetTasksQuery, useDeleteTaskMutation } from '@/features/taskApiSlice';
 
 const Home: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    dispatch(fetchCategories());
-    dispatch(fetchTasks());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(fetchCategories());
+  //   dispatch(fetchTasks());
+  // }, [dispatch]);
 
-  const categories = useAppSelector((state: RootState) => selectCategories(state));
-  const tasks = useAppSelector((state: RootState) => selectTasks(state));
+  const {data:categories, error, isLoading} = useGetCategoriesQuery();
+
+  // const categories = useAppSelector((state: RootState) => selectCategories(state));
+  // const tasks = useAppSelector((state: RootState) => selectTasks(state));
+
+  const {data:tasks=[]} = useGetTasksQuery();
+  const [deleteTask] =useDeleteTaskMutation();
 
   const onDelete = async (taskId: number) => {
     if (window.confirm('Are you sure you want to delete this task?')) {
       try {
-        await axios.delete(`http://127.0.0.1:8000/api/tasks/${taskId}/`);
-        dispatch(fetchTasks());
+        await deleteTask(taskId).unwrap();
+        // await axios.delete(`http://127.0.0.1:8000/api/tasks/${taskId}/`);
+        // dispatch(fetchTasks());
       } catch (error) {
         console.error('Error deleting task:', error);
       }
@@ -36,6 +44,7 @@ const Home: React.FC = () => {
     ? tasks.filter((task) => task.category_name === selectedCategory)
     : tasks;
 
+    if(isLoading) return <div>Loading....</div>
   return (
     <div className="flex items-center justify-start min-h-screen bg-gradient-to-br from-gray-900 to-black text-white p-1 lg:p-10">
       <motion.main
@@ -59,7 +68,7 @@ const Home: React.FC = () => {
               className="w-full lg:1/5 px-10 rounded text-gray-900 border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All</option>
-              {categories.map((category) => (
+              {categories?.map((category) => (
                 <option key={category.id} value={category.name}>
                   {category.name}
                 </option>

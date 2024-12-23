@@ -5,12 +5,14 @@ from django.contrib.auth.models import AbstractUser
 
 
 class CustomUser(AbstractUser):
+    is_google_user = models.BooleanField(default=False)
+    profile_picture=models.URLField(null=True, blank=True)
     # name=models.CharField(max_length=100, blank=True)
     email=models.EmailField(unique=True)
 
     USERNAME_FIELD='email'  #specify that email is used for unique identification instead of default username
     REQUIRED_FIELDS=['username']
-
+  
     def __str__(self) :
         return self.email
     
